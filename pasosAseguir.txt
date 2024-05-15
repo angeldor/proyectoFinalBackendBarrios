@@ -1,0 +1,26 @@
+armar estructura del servidor, enfocado a la implementacion de un frontend para consumir esta API
+index.js 
+mongoose con mongodb real 
+DAO y modelos
+
+
+objetibos de desafios y pre entregas
+clase  2: productManager para gestionar productos CRUD DONE
+clase  4: manejo de archivos con FS(obsoleto ya implementando mongodb) DONE
+clase  6: desarrollar servidor en express DONE
+clase  8: pre entrega desarrollar servidor con localhost:8080 con /products y /carts y que devuelva todos los productos y carritos respectivamente DONE
+clase 10: websockets y vistas (no mas vistas, se usara React + Vite para el frontend) DONE
+clase 15: persistencias de productos y carritos por mongodb 
+clase 17: pre entrega 2 profesionalizar la DB con mongoose-paginate-v2, implementar los query params limit y CRUD por id
+clase 19: implementacion de login y singup conectado a mongodb y modelos de usuarios
+clase 21: encriptacion de contraseñas por bcrypt y passport para login y register, usar jwt para la autenticación
+clase 24: modelo completo de user y la verificacion de usuario actual /current con todos los datos del user
+clase 27: implementar variables de entorno con .env
+clase 30: DAO y DTO, uso de factory e implementar ruta para finalizar compra con el carrito del cliente y entregar el ticket de compra realizada con los datos pertinentes
+clase 32: mocking y manejo de errores
+clase 34: implementacion del logger, mantener orden de prioridades, endpoitn /loggerTest
+clase 37: recuperacion de contraseñas y establecer roles de usuarios, regular y premium
+clase 39: documentacion de la API a partir de Swagger (actual)
+clase 41: modulos de testing para el proyecto final
+clase 44: trabajar sobre los usuarios premium y poder subir archivos a la DB
+clase 46: Entrega final, terminar el proyecto con las consignas asignadas.
