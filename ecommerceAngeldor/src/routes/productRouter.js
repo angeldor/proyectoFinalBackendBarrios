@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
-import ProductRepository from "../DAO/DB/productRepository";
-import { productModel } from "../DAO/models/product.model";
+import ProductRepository from "../DAO/DB/productRepository.js";
+import { productModel } from "../DAO/models/product.model.js";
 
 const productRouter = express.Router();
 

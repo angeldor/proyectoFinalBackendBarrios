@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import { registerUser } from "../DAO/DB/userManager";
 import transporter from "../index.js";
 import { userModel } from "../DAO/models/user.model.js";
 import UserRepository from "../DAO/DB/userRepository.js";

@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import nodemailer from 'nodemailer';
 // import { transport } from "winston";
+import swaggerConfig from "./swagger.js";
 
 dotenv.config();
 const mongoURL = process.env.MONGO_URL;
@@ -31,6 +32,8 @@ app.use("/product", productRouter);
 app.use("/user", userRouter);
 app.use("/cart", cartRouter);
 
+
+swaggerConfig(app);
 mongoose
   .connect(mongoURL, {
     userNewUrlParser: true,

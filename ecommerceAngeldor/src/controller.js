@@ -1,4 +1,4 @@
-import { UserManager } from "./DAO/DB/userManager";
+import UserManager from "./DAO/DB/userManager.js";
 
 class UserController{
     static async changeUserRole(req, res, next) {

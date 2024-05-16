@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { UserManager } from './DAO/DB/userManager.js';
+import  UserManager  from './DAO/DB/userManager.js';
 
 passport.use(
     new LocalStrategy(async (email, password, done) =>{

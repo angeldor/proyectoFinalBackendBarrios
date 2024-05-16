@@ -1,9 +1,9 @@
 import express from "express";
-import mongoose, { mongo } from "mongoose";
-import CartRepository from "../DAO/DB/cartRepository";
-import { cartModel } from "../DAO/models/cart.model";
-import ProductManager from "../DAO/DB/productManager";
-import ProductRepository from "../DAO/DB/productRepository";
+import mongoose from "mongoose";
+import CartRepository from "../DAO/DB/cartRepository.js";
+import { cartModel } from "../DAO/models/cart.model.js";
+import ProductManager from "../DAO/DB/productManager.js";
+import ProductRepository from "../DAO/DB/productRepository.js";
 
 const cartRouter = express.Router();
 
@@ -11,7 +11,7 @@ mongoose.connection.on("error", (err) => {
   console.error("Error al conectarse a Mongo", +err);
 });
 
-productRouter.get("/ping", (req, res) => {
+cartRouter.get("/ping", (req, res) => {
   res.send("pong");
 });
 
