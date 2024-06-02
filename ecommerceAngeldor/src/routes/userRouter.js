@@ -15,6 +15,10 @@ userRouter.get("/ping", (req, res) => {
   res.send("pong");
 });
 
+router.post("/premium/:uid", UserController.changeUserRole);
+// ruta para documentos
+router.post("/:uid/documents", UserController.uploadDocuments);
+
 userRouter.get("/loggerTest", (req, res) => {
   devLogger.debug("Debug message");
   devLogger.info("Information message");

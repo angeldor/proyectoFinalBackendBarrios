@@ -28,6 +28,13 @@ const userSchema = new mongoose.Schema({
     enum: ["usuario", "premium"],
     default: "usuario",
   },
+  documents: [
+    {
+      name: String,
+      reference: String
+    }
+  ],
+  last_conection: Date
 });
 
 export const userModel = mongoose.model(usersCollection, userSchema);
