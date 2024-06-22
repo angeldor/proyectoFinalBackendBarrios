@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import mongoose from "mongoose";
 import ProductRepository from "../DAO/DB/productRepository.js";
 import { productModel } from "../DAO/models/product.model.js";
@@ -145,6 +145,71 @@ productRouter.get("/productdetail/:id", async (req, res) => {
   }catch(error){
     res.status(500).send(`Error: ${error.message}`);
   };
+});
+
+// Middleware para validar sesión de administrador o premium
+function isAdminOrPremium(req, res, next) {
+  if (req.session && req.session.user) {
+    const { role } = req.session.user;
+    if (role === 'admin' || role === 'premium') {
+      return next(); 
+    }
+  }
+  return res.status(403).json({ message: 'Acceso denegado. Requiere rol de administrador o premium.' });
+}
+
+productRouter.post("/addProduct", isAdminOrPremium, async (req, res)=>{
+  try {
+    const { title, description, price, image, code, stock, category, thumbnails } = req.body;
+
+    const newProduct = await ProductRepository.addProduct({
+      title,
+      description,
+      price,
+      image,
+      code,
+      stock,
+      category,
+      thumbnails,
+    });
+
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(400).send(`Error: ${error.message}`);
+  }
+});
+
+
+productRouter.put("/updateproduct/:id",isAdminOrPremium, async (req, res) =>{
+  const productId = req.params.id;
+  const updatedFields = req.body;
+
+  try {
+    const updatedProduct = await ProductRepository.updateProduct(productId, updatedFields);
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(400).send(`Error: ${error.message}`);
+  }
+});
+
+productRouter.delete("/deleteproduct/:id",isAdminOrPremium, async (req, res) =>{
+  const productId = req.params.id;
+
+  try {
+    await ProductRepository.deleteProduct(productId);
+    res.send(`Product with ID ${productId} deleted successfully.`);
+  } catch (error) {
+    res.status(400).send(`Error: ${error.message}`);
+  }
+});
+
+productRouter.get("/productlist", async (req, res) =>{
+  try {
+    const products = await ProductRepository.getAllProducts();
+    res.json(products);
+  } catch (error) {
+    res.status(400).send(`Error: ${error.message}`);
+  }
 });
 
 

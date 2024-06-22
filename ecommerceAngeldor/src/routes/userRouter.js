@@ -16,6 +16,15 @@ userRouter.get("/ping", (req, res) => {
 });
 
 router.post("/premium/:uid", UserController.changeUserRole);
+
+function isAuthenticated(req, res, next) {
+  if (req.session.user) {
+    next(); // Si está autenticado, permite continuar
+  } else {
+    res.status(401).json({ message: 'Acceso no autorizado' });
+  }
+}
+
 // ruta para documentos
 router.post("/:uid/documents", UserController.uploadDocuments);
 
@@ -130,8 +139,7 @@ userRouter.post("/register", async (req, res)=> {
 });
 
 userRouter.post("/login", async(req, res)=>{
-  let email = req.body.email;
-  let password = req.body.password;
+  const {email, password} = req.body;
 
   if (!email || !password) {
     res.status(400).json({ message: "Missing email or password" });
@@ -153,6 +161,7 @@ userRouter.post("/login", async(req, res)=>{
 userRouter.get("/logout", async(req, res)=>{
   req.session.destroy((err)=>{
     if (err) {
+      console.error('Error al cerrar sesión:', err);
       res.status(500).json({ message: "Error logging out" });
     } else {
       res.status(200).json({ message: "Logout successful" });

@@ -8,6 +8,7 @@ import session from "express-session";
 import nodemailer from 'nodemailer';
 // import { transport } from "winston";
 import swaggerConfig from "./swagger.js";
+import connectMongo from 'connect-mongo'
 
 dotenv.config();
 const mongoURL = process.env.MONGO_URL;
@@ -47,6 +48,8 @@ mongoose
     console.log("Error al conectar con MongoDB: ", error);
   });
 
+  const MongoStore = connectMongo(session)
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(passport.initialize());
@@ -56,9 +59,11 @@ app.use(cookieParser());
 
 app.use(
   session({
-    secret: secret,
+    secret: 'secreto',
     resave: false,
     saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    cookie:{ secure: false }
   })
 );
 
