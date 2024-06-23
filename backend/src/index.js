@@ -27,9 +27,7 @@ swaggerConfig(app);
 
 // Conectar a MongoDB
 mongoose
-  .connect('mongodb://localhost:27017/ecommerce', {
-    // useNewUrlParser: true,
-    // useUnifiedTopology: true,
+  .connect('mongodb://mongo:PuEWITEPXXkdwFlhjyxiWubDYIUYekGX@monorail.proxy.rlwy.net:58682', {
 })
 
 .then(() => {
