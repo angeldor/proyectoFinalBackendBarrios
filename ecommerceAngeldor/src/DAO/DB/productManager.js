@@ -54,14 +54,22 @@ class ProductManager {
     return product;
   }
   //eliminar un producto
-  async deleteProduct(productId){
+  async deleteProduct(productId) {
     const product = await productModel.findById(productId);
-    if (!product){
-        throw new Error(`Product with id ${productId} not found.`);
+    if (!product) {
+      throw new Error(`Product with id ${productId} not found.`);
+    }
 
-    };
+    if (product.owner !== "admin") {
+      const mailOptions = {
+        to: product.owner,
+        subject: "Producto eliminado",
+        text: `Tu producto "${product.title}" ha sido eliminado.`,
+      };
+      await sendMail(mailOptions.to, mailOptions.subject, mailOptions.text);
+    }
     await product.deleteOne();
-  };
-};
+  }
+}
 
 export default ProductManager;

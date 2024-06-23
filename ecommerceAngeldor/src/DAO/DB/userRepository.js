@@ -31,6 +31,18 @@ class UserRepository {
   static async getCurrentUser(userId) {
     return await UserManager.getCurrentUser(userId);
   }
+
+  static async getAllUsers() {
+    return await UserManager.getAllUsers();
+  }
+
+  static async getInactiveUsers(minutes) {
+    return await UserManager.getInactiveUsers(minutes);
+  }
+
+  static async deleteUserById(userId) {
+    return await UserManager.deleteUserById(userId);
+  }
 }
 
 export default UserRepository;

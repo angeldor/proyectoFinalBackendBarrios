@@ -7,10 +7,6 @@ import ProductRepository from "../DAO/DB/productRepository.js";
 
 const cartRouter = express.Router();
 
-mongoose.connection.on("error", (err) => {
-  console.error("Error al conectarse a Mongo", +err);
-});
-
 cartRouter.get("/ping", (req, res) => {
   res.send("pong");
 });

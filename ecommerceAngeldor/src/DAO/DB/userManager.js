@@ -22,7 +22,7 @@ class UserManager {
     return await userModel.findOne({ email, password });
   }
 
-  // guardao del usuario en la DB
+  // guardado del usuario en la DB
   static async insertUser(first_name, last_name, age, email, password) {
     return await new userModel({
       first_name,
@@ -36,10 +36,9 @@ class UserManager {
 
   // buscar el usuario por su ID dentro de mongoDB
   static async getUserById(id) {
-    return await userModel.findOne(
-      { _id: id },
-      { first_name: 1, last_name: 1, age: 1, email: 1 }
-    ).lean();
+    return await userModel
+      .findOne({ _id: id }, { first_name: 1, last_name: 1, age: 1, email: 1 })
+      .lean();
   }
 
   // cambiar rol de usuario
@@ -63,7 +62,7 @@ class UserManager {
   static async getCurrentPassword(userId) {
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error('User not found.');
+      throw new Error("User not found.");
     }
 
     return user.password;
@@ -91,6 +90,42 @@ class UserManager {
   static async findById(userId) {
     return await userModel.findById(userId);
   }
+
+// Obtener todos los usuarios
+  async getAllUsers() {
+    return await userModel.find({
+      first_name: 1,
+      last_name: 1,
+      email: 1,
+      role: 1,
+    });
+  }
+
+ // Obtener usuarios inactivos
+  async getInactiveUsers(minutes) {
+    const inactiveDate = new Date();
+    inactiveDate.setMinutes(inactiveDate.getMinutes() - minutes);
+    return await userModel.find({last_conection: {$lt: inactiveDate} });
+  }
+
+ // Eliminar usuario por ID
+ async deleteUserById(userId){
+  const user = await userModel.findById(userId);
+
+  if (!user) {
+    throw new Error(`Usuario con ID ${userId} no encontrado.`);
+  };
+
+  const mailOptions = {
+    to: user.email,
+    subject: 'Cuenta eliminada',
+    text: `Tu cuenta ha sido eliminada.`,
+  };
+
+  await sendMail(mailOptions.to, mailOptions.subject, mailOptions.text);
+
+  return await userModel.findByIdAndDelete(userId);
+ }
 }
 
 export default UserManager;

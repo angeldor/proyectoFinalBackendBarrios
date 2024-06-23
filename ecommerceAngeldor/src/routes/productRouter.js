@@ -5,10 +5,6 @@ import { productModel } from "../DAO/models/product.model.js";
 
 const productRouter = express.Router();
 
-mongoose.connection.on("error", (err) => {
-  console.error("Error al conectarse a Mongo", +err);
-});
-
 productRouter.get("/ping", (req, res) => {
   res.send("pong");
 });

@@ -1,22 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import passport from "./passport.config.js";
 import errorHandler from "./errorHandler.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import nodemailer from 'nodemailer';
-// import { transport } from "winston";
 import swaggerConfig from "./swagger.js";
-import connectMongo from 'connect-mongo'
-
-dotenv.config();
-const mongoURL = process.env.MONGO_URL;
-const adminEmail = process.env.ADMIN_EMAIL;
-const adminPassword = process.env.ADMIN_PASSWORD;
-const emailPassword = process.env.EMAIL_PASSWORD;
-const secret = process.env.SESSION_SECRET;
-const email = process.env.EMAIL;
+import connectMongo from 'connect-mongo';
 
 const app = express();
 app.use(express.json());
@@ -33,54 +22,45 @@ app.use("/product", productRouter);
 app.use("/user", userRouter);
 app.use("/cart", cartRouter);
 
-
+// Configurar Swagger
 swaggerConfig(app);
+
+// Conectar a MongoDB
 mongoose
-  .connect(mongoURL, {
-    userNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect('mongodb://localhost:27017/ecommerce', {
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
+})
 
-  .then(() => {
-    console.log("Conexion a MongoDB exitosa");
-  })
-  .catch((error) => {
-    console.log("Error al conectar con MongoDB: ", error);
-  });
-
-  const MongoStore = connectMongo(session)
+.then(() => {
+  console.log("Conexion a MongoDB exitosa");
+})
+.catch((error) => {
+  console.log("Error al conectar con MongoDB: ", error);
+});
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(errorHandler);
 app.use(cookieParser());
 
 app.use(
   session({
-    secret: 'secreto',
+    secret: 'secreto.secreto',
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
     cookie:{ secure: false }
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(errorHandler);
+
 app.use((req, res, next)=> {
   if(!req.isAuthenticated() && req.originalUrl !== "/login"){
-    res.redirect("/login");
+    res.redirect("/user/login");
   } else {
     next();
   };
 });
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: email ,
-    pass: emailPassword,
-  },
-});
-
-export default transporter;

@@ -1,21 +1,51 @@
 import express from "express";
-import mongoose from "mongoose";
-import transporter from "../index.js";
+import { sendMail } from "../emailservice.js";
 import { userModel } from "../DAO/models/user.model.js";
 import UserRepository from "../DAO/DB/userRepository.js";
 import UserController from "../controller.js";
 
 const userRouter = express.Router();
 
-mongoose.connection.on("error", (err) => {
-  console.error("Error al conectarse a Mongo", +err);
-});
-
 userRouter.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-router.post("/premium/:uid", UserController.changeUserRole);
+userRouter.get("/", async(req, res)=>{
+  try {
+    const users = await UserRepository.getAllUsers();
+    const userList = users.map(user => ({
+      name: `${user.first_name} ${user.last_name}`,
+      email: user.email,
+      role: user.role,
+    }));
+    res.status(200).json(userList);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener usuarios' });
+  }
+});
+
+userRouter.delete("/", async (req, res)=>{
+  try {
+    const users = await UserRepository.getInactiveUsers(30);
+    const deletePromises = users.map(user => {
+      return UserRepository.deleteUserById(user._id).then(() => {
+        const mailOptions = {
+          to: user.email,
+          subject: 'Cuenta eliminada por inactividad',
+          text: `Hola ${user.first_name}, tu cuenta ha sido eliminada por inactividad.`,
+        };
+        return sendMail(mailOptions.to, mailOptions.subject, mailOptions.text);
+      });
+    });
+
+    await Promise.all(deletePromises);
+    res.status(200).json({ message: 'Usuarios inactivos eliminados' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar usuarios inactivos' });
+  }
+});
+
+userRouter.post("/premium/:uid", UserController.changeUserRole);
 
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
@@ -26,7 +56,7 @@ function isAuthenticated(req, res, next) {
 }
 
 // ruta para documentos
-router.post("/:uid/documents", UserController.uploadDocuments);
+userRouter.post("/:uid/documents", UserController.uploadDocuments);
 
 userRouter.get("/loggerTest", (req, res) => {
   devLogger.debug("Debug message");
@@ -55,14 +85,11 @@ userRouter.post("/forgot-password", async (req, res) => {
 
     const resetLink = `http://localhost:8080/reset-password/${token}`;
 
-    const mailOptions = {
-      from: "your@example.com",
-      to: user.email,
-      subject: "Restablecer contraseña",
-      text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: ${resetLink}`,
-    };
+    const subject = "Restablecer contraseña";
+    const text = `Para restablecer tu contraseña, haz clic en el siguiente enlace: ${resetLink}`;
+    const html = `<p>Para restablecer tu contraseña, haz clic en el siguiente enlace: <a href="${resetLink}">${resetLink}</a></p>`;
 
-    await transporter.sendMail(mailOptions);
+    await sendMail(user.email, subject, text, html);
 
     res.status(200).json({
       message: "Correo electrónico de restablecimiento de contraseña enviado.",
